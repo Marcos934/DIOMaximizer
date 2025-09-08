@@ -54,4 +54,4 @@ Ao clicar novamente, os estilos originais são restaurados, retornando ao layout
 Feito com ❤️ por **Marcos V. Mulinari**
 
 - **LinkedIn:** [https://www.linkedin.com/in/marcosmulinarii](https://www.linkedin.com/in/marcosmulinarii)
-- **GitHub:** [https://github.com/marcosmulinarii](https://github.com/Marcos934)
+- **GitHub:** [https://github.com/Marcos934](https://github.com/Marcos934)
