@@ -1,17 +1,19 @@
 // ==UserScript==
 // @name         DIO Maximizer
 // @namespace    https://github.com/marcosmulinarii
-// @version      1.1
+// @version      1.2
 // @description  Adiciona um botão para ocultar o menu e maximizar o player de vídeo na plataforma DIO, otimizando a visualização.
 // @author       Marcos V. Mulinari
-// @match        https://web.dio.me/*
+// @match        https://web.dio.me/track/*
+// @match        https://web.dio.me/project/*
+// @match        https://web.dio.me/lab/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=dio.me
 // @grant        none
 // @homepageURL  https://www.linkedin.com/in/marcosmulinarii
 // ==/UserScript==
 
 (function() {
-    'use strict';   
+    'use strict';
 
     const setupButtonLogic = (menu, videoPlayer) => {
         const iconeParaFechar = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
@@ -88,7 +90,7 @@
     // Tenta encontrar os elementos a cada 500ms
     const intervalId = setInterval(() => {
         const elementoMenu = document.querySelector("#root > div > ul");
-        const elementoPrincipal = document.querySelector("#root > div > div.sc-iUVIVP.eZpjCN > div > div.sc-dOvA-dm.cQqUUB > div");
+        const elementoPrincipal = document.querySelector("#root [data-player]");
 
         if (elementoMenu && elementoPrincipal) {
             clearInterval(intervalId); // Para de verificar assim que encontra
