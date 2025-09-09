@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DIO Maximizer
 // @namespace    https://github.com/marcosmulinarii
-// @version      1.2
+// @version      1.3
 // @description  Adiciona um botão para ocultar o menu e maximizar o player de vídeo na plataforma DIO, otimizando a visualização.
 // @author       Marcos V. Mulinari
 // @match        https://web.dio.me/track/*
@@ -15,11 +15,13 @@
 (function() {
     'use strict';
 
-    const setupButtonLogic = (menu, videoPlayer) => {
-        const iconeParaFechar = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
-        const iconeParaAbrir = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>`;
+    const ID_BOTAO = 'dio-maximizer-final-btn';
+    const iconeParaAbrir = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
+    const iconeParaFechar = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>`;
 
+    if (!document.getElementById(ID_BOTAO)) {
         const toggleButton = document.createElement('button');
+        toggleButton.id = ID_BOTAO;
         document.body.appendChild(toggleButton);
 
         Object.assign(toggleButton.style, {
@@ -37,27 +39,27 @@
             justifyContent: 'center',
             cursor: 'pointer',
             zIndex: '9999',
-            boxShadow: '0 4px 10px rgba(0,0,0,0.25)'
+            boxShadow: '0 4px 10px rgba(0,0,0,0.25)',
+            opacity: '0',
+            transform: 'scale(0.5)',
+            transition: 'opacity 0.3s ease, transform 0.3s ease'
         });
+    }
 
-        let menuEstaVisivel = true;
+    document.body.addEventListener('click', function(event) {
+        if (event.target.closest('#' + ID_BOTAO)) {
+            const menu = document.querySelector("#root ul");
+            const player = document.querySelector("#root [data-player]");
+            const toggleButton = document.getElementById(ID_BOTAO); 
 
-        const atualizarBotao = () => {
-            if (menuEstaVisivel) {
-                toggleButton.innerHTML = iconeParaFechar;
-                toggleButton.setAttribute('aria-label', 'Ocultar menu');
-            } else {
-                toggleButton.innerHTML = iconeParaAbrir;
-                toggleButton.setAttribute('aria-label', 'Mostrar menu');
-            }
-        };
+            if (!menu || !player || !toggleButton) return;
 
-        toggleButton.addEventListener('click', () => {
-            if (menuEstaVisivel) {
+            const menuEstaOculto = menu.style.transform === 'translateX(100%)';
+
+            if (!menuEstaOculto) {
                 menu.style.transition = 'transform 0.5s ease-in-out';
                 menu.style.transform = 'translateX(100%)';
-
-                Object.assign(videoPlayer.style, {
+                Object.assign(player.style, {
                     transition: 'all 0.5s ease-in-out',
                     position: 'fixed',
                     top: '0',
@@ -66,10 +68,12 @@
                     height: '100vh',
                     zIndex: '1000'
                 });
+
+                toggleButton.innerHTML = iconeParaAbrir;
+                toggleButton.setAttribute('aria-label', 'Mostrar menu');
             } else {
                 menu.style.transform = 'translateX(0)';
-
-                Object.assign(videoPlayer.style, {
+                Object.assign(player.style, {
                     position: '',
                     top: '',
                     left: '',
@@ -77,25 +81,41 @@
                     height: '100%',
                     zIndex: ''
                 });
+               
+                toggleButton.innerHTML = iconeParaFechar;
+                toggleButton.setAttribute('aria-label', 'Ocultar menu');
             }
+        }
+    });
 
-            menuEstaVisivel = !menuEstaVisivel;
-            atualizarBotao();
-        });
+    let debounceTimer;
+    const verificarEstadoDaPagina = () => {
+        const player = document.querySelector("#root [data-player]");
+        const toggleButton = document.getElementById(ID_BOTAO);
+        const menu = document.querySelector("#root ul");
 
-        atualizarBotao();
-        console.log('[DIO Maximizer] Botão de controle adicionado com sucesso!');
+        if (!toggleButton) return;
+
+        if (player && menu) {
+            toggleButton.style.opacity = '1';
+            toggleButton.style.transform = 'scale(1)';
+
+            const menuEstaOculto = menu.style.transform === 'translateX(100%)';
+            toggleButton.innerHTML = menuEstaOculto ? iconeParaAbrir : iconeParaFechar;
+            toggleButton.setAttribute('aria-label', menuEstaOculto ? 'Mostrar menu' : 'Ocultar menu');
+        } else {
+            toggleButton.style.opacity = '0';
+            toggleButton.style.transform = 'scale(0.5)';
+        }
     };
 
-    // Tenta encontrar os elementos a cada 500ms
-    const intervalId = setInterval(() => {
-        const elementoMenu = document.querySelector("#root > div > ul");
-        const elementoPrincipal = document.querySelector("#root [data-player]");
+    const observer = new MutationObserver(() => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(verificarEstadoDaPagina, 1000);
+    });
 
-        if (elementoMenu && elementoPrincipal) {
-            clearInterval(intervalId); // Para de verificar assim que encontra
-            setupButtonLogic(elementoMenu, elementoPrincipal);
-        }
-    }, 500);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    setTimeout(verificarEstadoDaPagina, 2000);
 
 })();
