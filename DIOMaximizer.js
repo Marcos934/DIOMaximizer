@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DIO Maximizer
 // @namespace    https://github.com/marcosmulinarii
-// @version      1.3
+// @version      1.5
 // @description  Adiciona um botão para ocultar o menu e maximizar o player de vídeo na plataforma DIO, otimizando a visualização.
 // @author       Marcos V. Mulinari
 // @match        https://web.dio.me/track/*
@@ -46,11 +46,16 @@
         });
     }
 
+    // Função que busca o menu de forma flexível
+    function findMenuElement() {
+        return document.querySelector("#root ul") || document.querySelector("#root div.track-lessons");
+    }
+
     document.body.addEventListener('click', function(event) {
         if (event.target.closest('#' + ID_BOTAO)) {
-            const menu = document.querySelector("#root ul");
+            const menu = findMenuElement(); // Usa a nova função de busca
             const player = document.querySelector("#root [data-player]");
-            const toggleButton = document.getElementById(ID_BOTAO); 
+            const toggleButton = document.getElementById(ID_BOTAO);
 
             if (!menu || !player || !toggleButton) return;
 
@@ -68,7 +73,6 @@
                     height: '100vh',
                     zIndex: '1000'
                 });
-
                 toggleButton.innerHTML = iconeParaAbrir;
                 toggleButton.setAttribute('aria-label', 'Mostrar menu');
             } else {
@@ -81,7 +85,6 @@
                     height: '100%',
                     zIndex: ''
                 });
-               
                 toggleButton.innerHTML = iconeParaFechar;
                 toggleButton.setAttribute('aria-label', 'Ocultar menu');
             }
@@ -92,7 +95,7 @@
     const verificarEstadoDaPagina = () => {
         const player = document.querySelector("#root [data-player]");
         const toggleButton = document.getElementById(ID_BOTAO);
-        const menu = document.querySelector("#root ul");
+        const menu = findMenuElement();
 
         if (!toggleButton) return;
 
