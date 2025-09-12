@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         DIO Maximizer
 // @namespace    https://github.com/marcosmulinarii
-// @version      1.5
+// @version      1.6
 // @description  Adiciona um botão para ocultar o menu e maximizar o player de vídeo na plataforma DIO, otimizando a visualização.
 // @author       Marcos V. Mulinari
 // @match        https://web.dio.me/track/*
 // @match        https://web.dio.me/project/*
 // @match        https://web.dio.me/lab/*
+// @match        https://web.dio.me/course/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=dio.me
 // @grant        none
 // @homepageURL  https://www.linkedin.com/in/marcosmulinarii
